@@ -1,14 +1,22 @@
 .{
     .name = "libpng",
     .version = "1.6.43",
-    .paths = .{""},
+    .minimum_zig_version = "0.13.0",
+    .paths = .{
+        "LICENSE",
+        "build.zig",
+        "build.zig.zon",
+        "pnglibconf.h",
+    },
     .dependencies = .{
         .libpng = .{
             .url = "https://github.com/glennrp/libpng/archive/refs/tags/v1.6.43.tar.gz",
             .hash = "1220aa013f0c83da3fb64ea6d327f9173fa008d10e28bc9349eac3463457723b1c66",
         },
 
-        .zlib = .{ .path = "../zlib" },
-        .apple_sdk = .{ .path = "../apple-sdk" },
+        .zlib = .{
+            .url = "https://github.com/allyourcodebase/zlib/archive/refs/tags/1.3.1.tar.gz",
+            .hash = "122034ab2a12adf8016ffa76e48b4be3245ffd305193edba4d83058adbcfa749c107",
+        },
     },
 }
