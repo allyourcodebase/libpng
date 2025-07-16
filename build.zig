@@ -6,12 +6,15 @@ pub fn build(b: *std.Build) !void {
 
     const upstream = b.dependency("libpng", .{});
 
-    const lib = b.addStaticLibrary(.{
+    const lib = b.addLibrary(.{
         .name = "png",
-        .target = target,
-        .optimize = optimize,
+        .linkage = .static,
+        .root_module = b.createModule(.{
+            .target = target,
+            .optimize = optimize,
+            .link_libc = true,
+        }),
     });
-    lib.linkLibC();
 
     const zlib_dep = b.dependency("zlib", .{ .target = target, .optimize = optimize });
     lib.linkLibrary(zlib_dep.artifact("z"));
