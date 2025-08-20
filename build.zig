@@ -21,9 +21,9 @@ pub fn build(b: *std.Build) !void {
     lib.addIncludePath(upstream.path(""));
     lib.addIncludePath(b.path(""));
 
-    var flags = std.ArrayList([]const u8).init(b.allocator);
-    defer flags.deinit();
-    try flags.appendSlice(&.{
+    var flags: std.ArrayListUnmanaged([]const u8) = .empty;
+    defer flags.deinit(b.allocator);
+    try flags.appendSlice(b.allocator, &.{
         "-DPNG_ARM_NEON_OPT=0",
         "-DPNG_POWERPC_VSX_OPT=0",
         "-DPNG_INTEL_SSE_OPT=0",
