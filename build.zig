@@ -6,23 +6,26 @@ pub fn build(b: *std.Build) !void {
 
     const upstream = b.dependency("libpng", .{});
 
+    const mod = b.createModule(.{
+        .target = target,
+        .optimize = optimize,
+        .link_libc = true,
+    });
+
     const lib = b.addLibrary(.{
         .name = "png",
         .linkage = .static,
-        .root_module = b.createModule(.{
-            .target = target,
-            .optimize = optimize,
-            .link_libc = true,
-        }),
+        .root_module = mod,
     });
 
     const zlib_dep = b.dependency("zlib", .{ .target = target, .optimize = optimize });
-    lib.linkLibrary(zlib_dep.artifact("z"));
-    lib.addIncludePath(upstream.path(""));
-    lib.addIncludePath(b.path(""));
+    mod.linkLibrary(zlib_dep.artifact("z"));
+    mod.addIncludePath(upstream.path(""));
+    mod.addIncludePath(b.path(""));
 
-    var flags: std.ArrayListUnmanaged([]const u8) = .empty;
+    var flags: std.ArrayList([]const u8) = .empty;
     defer flags.deinit(b.allocator);
+
     try flags.appendSlice(b.allocator, &.{
         "-DPNG_ARM_NEON_OPT=0",
         "-DPNG_POWERPC_VSX_OPT=0",
@@ -30,7 +33,7 @@ pub fn build(b: *std.Build) !void {
         "-DPNG_MIPS_MSA_OPT=0",
     });
 
-    lib.addCSourceFiles(.{
+    mod.addCSourceFiles(.{
         .root = upstream.path(""),
         .files = srcs,
         .flags = flags.items,
